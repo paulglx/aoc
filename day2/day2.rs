@@ -41,11 +41,11 @@ pub fn main() {
         })
         .collect();
 
-    let valid_reports: Vec<Vec<u32>> = reports
+    let valid_reports_count: usize = reports
         .into_iter()
         .filter(|r| is_valid(r) || is_valid_dampened(r))
-        .collect::<Vec<Vec<u32>>>();
+        .count();
 
     // println!("{:?}", valid_reports);
-    println!("{:?}", valid_reports.len());
+    println!("{:?}", valid_reports_count);
 }
