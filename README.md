@@ -10,6 +10,7 @@ Time used to output result, timed using [hyperfine](https://github.com/sharkdp/h
 | --------- | ---------- |
 | 1 | 2.5 |
 | 2 | 2.6 |
+| 3 | 4.9 |
 
 ```txt
 
