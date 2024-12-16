@@ -8,6 +8,8 @@ use petgraph::{
     matrix_graph::Zero,
 };
 
+use itertools::Itertools;
+
 fn check_update(
     update: &str,
     nodes: &HashMap<&str, NodeIndex>,
@@ -36,6 +38,24 @@ fn check_update(
     }
 
     result
+}
+
+fn fix_update(
+    update: &str,
+    nodes: &HashMap<&str, NodeIndex>,
+    graph: &DiGraph<&str, &str>,
+) -> String {
+    // Fixes update that is known not to work
+
+    println!("Trying to fix {}", update);
+
+    let v = update.split(",").collect::<Vec<&str>>();
+    for permutation in v.clone().into_iter().permutations(v.len()).unique() {
+        let perm_str = permutation.join(",");
+        println!("\tchecking {}", perm_str);
+        if check_update(&perm_str, nodes, graph) {}
+    }
+    String::from("")
 }
 
 fn main() {
@@ -77,12 +97,30 @@ fn main() {
     let updates = file_content.split("\n\n").nth(1).unwrap().lines();
 
     let filtered_updates = updates
+        .clone()
         .filter(|&update| check_update(update, &nodes, &graph))
         .map(|line| line.split(",").collect::<Vec<&str>>())
         .collect::<Vec<Vec<&str>>>();
     //
     // 4. sum middle values
     let result: u32 = filtered_updates
+        .into_iter()
+        .map(|update| update[update.len() / 2].parse::<u32>().unwrap())
+        .sum();
+
+    // PART 2
+    let fixed_updates = updates
+        .map(|update| {
+            if check_update(update, &nodes, &graph) {
+                update.to_string()
+            } else {
+                fix_update(update, &nodes, &graph)
+            }
+        })
+        .map(|line| line.split(",").map(String::from).collect::<Vec<String>>())
+        .collect::<Vec<Vec<String>>>();
+
+    let result: u32 = fixed_updates
         .into_iter()
         .map(|update| update[update.len() / 2].parse::<u32>().unwrap())
         .sum();
